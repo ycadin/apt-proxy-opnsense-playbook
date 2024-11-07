@@ -1,0 +1,18 @@
+- name: Configuration du proxy (OPNsense Squid) sur les différents postes clients
+
+  hosts: ubulocal
+
+  gather_facts: no
+
+  vars:
+    proto_serveur_et_port_proxy: http://opnsense:3128
+
+  tasks:
+    - name: Définition du proxy pour APT
+      blockinfile:
+        path: /etc/apt/apt.conf.d/10proxy.conf
+        create: yes
+        block: |
+          {% for proto in "http", "https", "ftp" %}
+          Acquire::{{ proto }}::Proxy "{{ proto_serveur_et_port_proxy }}";
+          {% endfor %}
